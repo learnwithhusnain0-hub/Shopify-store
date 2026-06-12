@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>My Orders - SH Stores</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+
+<div id="loading-screen">
+    <div class="loader-content">
+        <div class="loader-logo">SH stores</div>
+        <div class="loader-spinner"></div>
+        <div class="loader-text">LOADING</div>
+    </div>
+</div>
+
+<a href="https://wa.me/923038776223" class="whatsapp-float" target="_blank">
+    <i class="fab fa-whatsapp"></i>
+</a>
+
+<div id="main-content" style="display: none;">
+
+<header>
+    <div class="container">
+        <div class="header-inner">
+            <div class="logo">
+                <h1>SH stores</h1>
+            </div>
+            <nav class="desktop-nav">
+                <a href="index.html">HOME</a>
+                <a href="shop.html">SHOP</a>
+                <a href="#">SERVICES</a>
+                <a href="#">FREEBIES</a>
+                <a href="#">CONTACT</a>
+                <a href="#">ABOUT</a>
+                <a href="#">BLOG</a>
+            </nav>
+            <div class="header-actions">
+                <span class="currency-switch">PKR</span>
+                <a href="cart.html" class="cart-icon">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span id="cart-count">0</span>
+                </a>
+                <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
+            </div>
+        </div>
+    </div>
+</header>
+
+<div id="mobileMenu" class="mobile-menu">
+    <div class="mobile-menu-header">
+        <h3>SH stores</h3>
+        <button class="close-menu">&times;</button>
+    </div>
+    <div class="mobile-menu-links">
+        <a href="index.html">HOME</a>
+        <a href="shop.html">SHOP</a>
+        <a href="#">SERVICES</a>
+        <a href="#">FREEBIES</a>
+        <a href="#">CONTACT</a>
+        <a href="#">ABOUT</a>
+        <a href="#">BLOG</a>
+        <div class="menu-divider"></div>
+        <div class="currency-option">
+            <span>Currency: </span>
+            <button class="currency-btn active">PKR</button>
+            <button class="currency-btn">USD</button>
+        </div>
+        <div class="account-option" id="mobileAccountOption">
+            <i class="fas fa-user"></i>
+            <span id="mobileAccountText">ACCOUNT</span>
+        </div>
+        <div class="admin-option" id="mobileAdminOption" style="display: none;">
+            <i class="fas fa-tachometer-alt"></i>
+            <a href="admin.html">Admin Panel</a>
+        </div>
+        <div class="whatsapp-option">
+            <i class="fab fa-whatsapp"></i>
+            <span>+92 303 8776223</span>
+        </div>
+    </div>
+</div>
+
+<section class="orders-page">
+    <div class="container">
+        <h1>My Orders</h1>
+        <div id="ordersList" class="orders-list"></div>
+    </div>
+</section>
+
+<footer>
+    <div class="container">
+        <div class="footer-content">
+            <div class="footer-logo">
+                <h3>SH stores</h3>
+                <p>We offer digital solutions, tools, and products to make technology simple, accessible, and effective.</p>
+            </div>
+            <div class="footer-links">
+                <h4>Quick Links</h4>
+                <a href="#">Shop</a>
+                <a href="#">Services</a>
+                <a href="#">Freebies</a>
+                <a href="#">Blog</a>
+                <a href="#">About Us</a>
+                <a href="#">Contact</a>
+            </div>
+            <div class="footer-products">
+                <h4>Popular Products</h4>
+                <a href="#">Chat GPT Plus</a>
+                <a href="#">Netflix Subscription</a>
+                <a href="#">Grok AI</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 SH stores. All rights reserved.</p>
+        </div>
+    </div>
+</footer>
+
+</div>
+
+<script>
+    setTimeout(() => {
+        document.getElementById('loading-screen').style.display = 'none';
+        document.getElementById('main-content').style.display = 'block';
+    }, 1000);
+
+    const menuBtn = document.getElementById('mobileMenuBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+    const closeMenu = document.querySelector('.close-menu');
+    
+    menuBtn.onclick = () => mobileMenu.classList.add('active');
+    closeMenu.onclick = () => mobileMenu.classList.remove('active');
+    
+    function updateCartCount() {
+        let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+        document.getElementById('cart-count').innerText = cart.length;
+    }
+    
+    function loadOrders() {
+        let orders = JSON.parse(localStorage.getItem('orders') || '[]');
+        const container = document.getElementById('ordersList');
+        
+        if (orders.length === 0) {
+            container.innerHTML = '<p class="no-orders">No orders yet.</p>';
+            return;
+        }
+        
+        container.innerHTML = orders.reverse().map(order => `
+            <div class="order-card">
+                <div class="order-header">
+                    <h3>Order #${order.orderId}</h3>
+                    <span class="order-status ${order.status}">${order.status}</span>
+                </div>
+                <p>Date: ${new Date(order.date).toLocaleDateString()}</p>
+                <p>Total: Rs ${order.total}</p>
+                <p>Payment: ${order.paymentMethod}</p>
+                <button class="track-order-btn" onclick="trackOrder('${order.orderId}')">Track Order</button>
+            </div>
+        `).join('');
+    }
+    
+    window.trackOrder = (orderId) => {
+        let orders = JSON.parse(localStorage.getItem('orders') || '[]');
+        let order = orders.find(o => o.orderId === orderId);
+        if (order) {
+            alert(`Order Status: ${order.status}\n\nOrder Details:\nItems: ${order.items.length}\nTotal: Rs ${order.total}\nPayment: ${order.paymentMethod}`);
+        }
+    };
+    
+    loadOrders();
+    updateCartCount();
+</script>
+</body>
+</html>
